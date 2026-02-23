@@ -1,0 +1,300 @@
+.container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.emptyState h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.emptyState p {
+  font-size: 14px;
+  max-width: 260px;
+}
+
+/* Device wrapper — no visible styling, just a scaling/positioning container */
+.deviceWrapper {
+  transform-origin: center center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Frame-less mode: just the screen with rounded corners and shadow */
+.screenOnly {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Device frame (bezel) */
+.frame {
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 24px 80px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+}
+
+/* Subtle top-edge bezel shine */
+.bezelShine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+/* Desktop frame adjustments */
+.desktopFrame {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Screen area */
+.screen {
+  position: absolute;
+  overflow: hidden;
+  background: #000;
+  z-index: 2;
+}
+
+/* Iframe */
+.iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+  display: block;
+}
+
+/* Side buttons (physical hardware buttons) */
+.sideBtn {
+  position: absolute;
+  z-index: 3;
+}
+
+/* === Notch variants === */
+
+/* Dynamic Island (iPhone 14 Pro+) */
+.dynamicIsland {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 37px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 16px;
+}
+
+.diCamera {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #1a2a3a 0%, #0a0a12 100%);
+  box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+/* Classic notch (iPhone 14, older) */
+.notch {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 155px;
+  height: 32px;
+  background: #000;
+  border-radius: 0 0 18px 18px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.notchSpeaker {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: #1a1a22;
+}
+
+.notchCamera {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #1a2a3a 0%, #0a0a12 100%);
+}
+
+/* Punch hole (Samsung, Pixel) */
+.punchHole {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: #000;
+  border-radius: 50%;
+  z-index: 5;
+  box-shadow: 0 0 0 2px rgba(20, 20, 30, 0.7);
+}
+
+/* MacBook notch */
+.macNotch {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 20px;
+  background: inherit;
+  border-radius: 0 0 10px 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.macCamera {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #1a2a3a 0%, #0a0a12 100%);
+}
+
+/* Home indicator */
+.homeIndicator {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  z-index: 5;
+}
+
+/* Fold hinge */
+.foldHinge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  z-index: 4;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+/* === Laptop base === */
+.laptopBase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.laptopNotch {
+  width: 80px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0 0 2px 2px;
+}
+
+.laptopBottom {
+  width: 100%;
+  height: 10px;
+  border-radius: 0 0 8px 8px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* === Loading / Error states === */
+.loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #000;
+  color: var(--text-muted);
+  font-size: 13px;
+  z-index: 10;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0a0a0b;
+  color: var(--text-muted);
+  z-index: 10;
+  padding: 20px;
+  text-align: center;
+}
+
+.errorOverlay p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.errorOverlay span {
+  font-size: 12px;
+}

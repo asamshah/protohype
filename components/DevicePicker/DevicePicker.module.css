@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tabs {
+  display: flex;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.tab {
+  flex: 1;
+  height: 30px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+
+.tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+.tab:not(.active):hover {
+  color: var(--text-primary);
+}
+
+.deviceList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brandGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.brandLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.deviceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.deviceCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.deviceCard:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-elevated);
+}
+
+.deviceCard.selected {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  color: var(--text-secondary);
+}
+
+.selected .iconWrap {
+  color: var(--accent-hover);
+}
+
+.iconSvg {
+  display: block;
+}
+
+.deviceName {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected .deviceName {
+  color: var(--text-primary);
+}

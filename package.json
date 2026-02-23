@@ -1,0 +1,20 @@
+{
+  "name": "mockframe",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
+    "@netlify/plugin-nextjs": "^5.15.8",
+    "gif.js": "^0.2.0",
+    "html2canvas": "^1.4.1",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  }
+}
