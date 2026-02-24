@@ -30,20 +30,17 @@ export default function useRecorder(previewRef) {
     }
 
     try {
-      // Capture the entire browser tab
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         video: { displaySurface: 'browser', frameRate: 30 },
         preferCurrentTab: true,
       });
       displayStreamRef.current = displayStream;
 
-      // Create a hidden video element to read the display stream frames
       const srcVideo = document.createElement('video');
       srcVideo.srcObject = displayStream;
       srcVideo.muted = true;
       await srcVideo.play();
 
-      // Create an offscreen canvas for cropping to the device area
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
@@ -53,10 +50,8 @@ export default function useRecorder(previewRef) {
 
         const rect = previewRef.current.getBoundingClientRect();
 
-        // The display stream captures at the screen's native resolution
         const srcW = srcVideo.videoWidth;
         const srcH = srcVideo.videoHeight;
-        // Figure out the ratio between screen capture resolution and CSS viewport
         const viewportW = window.innerWidth;
         const viewportH = window.innerHeight;
         const ratioX = srcW / viewportW;
@@ -67,7 +62,6 @@ export default function useRecorder(previewRef) {
         const cropW = Math.round(rect.width * ratioX);
         const cropH = Math.round(rect.height * ratioY);
 
-        // Size the output canvas to the cropped region
         if (canvas.width !== cropW || canvas.height !== cropH) {
           canvas.width = cropW;
           canvas.height = cropH;
@@ -79,7 +73,6 @@ export default function useRecorder(previewRef) {
 
       cropFrame();
 
-      // Record from the cropped canvas stream
       const croppedStream = canvas.captureStream(30);
 
       const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
@@ -104,7 +97,6 @@ export default function useRecorder(previewRef) {
         }
       };
 
-      // If user stops sharing via browser UI
       displayStream.getVideoTracks()[0].onended = () => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
           mediaRecorderRef.current.stop();

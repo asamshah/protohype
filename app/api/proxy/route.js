@@ -103,6 +103,7 @@ export async function GET(request) {
     const baseHref = `<base href="${base.origin}${base.pathname.replace(/\/[^/]*$/, '/')}">`;
 
     // Script to intercept link clicks, fetch, and XHR to route through proxy
+    // Script to intercept link clicks, fetch, and XHR to route through proxy
     const navScript = `<script>
       (function() {
         var proxyOrigin = window.location.origin;
