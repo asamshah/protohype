@@ -2,18 +2,36 @@
   display: flex;
   height: 100vh;
   width: 100vw;
+  padding-left: calc(var(--sidebar-width) + 20px);
+  transition: background 0.3s ease;
 }
 
 .sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
   width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 20px;
   gap: 20px;
+  z-index: 100;
+  color: #1a1a1a;
+  border: none;
+  outline: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .logo {
@@ -21,7 +39,7 @@
   align-items: center;
   gap: 10px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .logoIcon {
@@ -34,22 +52,24 @@
   justify-content: center;
   font-size: 18px;
   font-weight: 700;
-  color: white;
+  color: var(--accent-text);
 }
 
 .logoText {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1a1a1a;
 }
 
-.sectionTitle {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+.sidebar :global(*) {
+  --bg-tertiary: #e8e8e8;
+  --bg-elevated: #dedede;
+  --border-color: #d0d0d0;
+  --border-hover: #b0b0b0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #444444;
+  --text-muted: #777777;
+  --accent-muted: rgba(167, 241, 117, 0.12);
 }
 
 .main {
@@ -58,23 +78,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
   position: relative;
   overflow: hidden;
 }
 
-.emptyState {
-  text-align: center;
-  color: var(--text-muted);
-}
-
-.emptyState h2 {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  color: var(--text-secondary);
-}
-
-.emptyState p {
-  font-size: 14px;
-}

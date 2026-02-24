@@ -23,27 +23,38 @@ export default function useScreenshot(previewRef, { onCaptureStart, onCaptureEnd
       video.muted = true;
       await video.play();
 
-      await new Promise((r) => requestAnimationFrame(r));
+      // Wait until the video stream is producing frames at a known resolution
+      await new Promise((resolve) => {
+        const check = () => {
+          if (video.videoWidth > 0 && video.videoHeight > 0) {
+            resolve();
+          } else {
+            requestAnimationFrame(check);
+          }
+        };
+        requestAnimationFrame(check);
+      });
 
       const rect = previewRef.current.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
+
+      // Use actual video dimensions to compute the ratio (getDisplayMedia
+      // does NOT necessarily capture at window.devicePixelRatio resolution)
+      const srcW = video.videoWidth;
+      const srcH = video.videoHeight;
+      const ratioX = srcW / window.innerWidth;
+      const ratioY = srcH / window.innerHeight;
+
+      const cropX = Math.round(rect.left * ratioX);
+      const cropY = Math.round(rect.top * ratioY);
+      const cropW = Math.round(rect.width * ratioX);
+      const cropH = Math.round(rect.height * ratioY);
 
       const canvas = document.createElement('canvas');
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
+      canvas.width = cropW;
+      canvas.height = cropH;
       const ctx = canvas.getContext('2d');
 
-      ctx.drawImage(
-        video,
-        Math.round(rect.left * dpr),
-        Math.round(rect.top * dpr),
-        Math.round(rect.width * dpr),
-        Math.round(rect.height * dpr),
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+      ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
 
       stream.getTracks().forEach((t) => t.stop());
 

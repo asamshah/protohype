@@ -42,7 +42,7 @@
   height: 36px;
   padding: 0 16px;
   background: var(--accent);
-  color: white;
+  color: var(--accent-text);
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;

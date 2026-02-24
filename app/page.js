@@ -18,7 +18,7 @@ export default function Home() {
   const [url, setUrl] = useState('');
   const [category, setCategory] = useState('mobile');
   const [selectedDevice, setSelectedDevice] = useState(devices[0]);
-  const [background, setBackground] = useState('#0a0a0b');
+  const [background, setBackground] = useState('transparent');
   const [includeFrame, setIncludeFrame] = useState(true);
   const [showExportModal, setShowExportModal] = useState(false);
   const [capturing, setCapturing] = useState(false);
@@ -37,10 +37,7 @@ export default function Home() {
     pauseRecording,
     stopRecording,
     clearRecording,
-  } = useRecorder(previewRef, {
-    onCaptureStart: () => setCapturing(true),
-    onCaptureEnd: () => setCapturing(false),
-  });
+  } = useRecorder(previewRef);
 
   const handleCategoryChange = useCallback((newCategory) => {
     setCategory(newCategory);
@@ -68,10 +65,10 @@ export default function Home() {
     [clearRecording]
   );
 
-  const hideToolbar = capturing || isRecording;
+  const hideToolbar = capturing;
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={url ? { background } : undefined}>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
           <div className={styles.logoIcon}>M</div>
@@ -88,11 +85,12 @@ export default function Home() {
         />
 
         <CaptureControls
-          includeFrame={includeFrame}
-          onIncludeFrameChange={setIncludeFrame}
           isRecording={isRecording}
           isPaused={isPaused}
           recordingTime={recordingTime}
+          onPauseRecording={pauseRecording}
+          onResumeRecording={startRecording}
+          onStopRecording={handleStopRecording}
         />
       </aside>
 
@@ -116,6 +114,8 @@ export default function Home() {
           isPaused={isPaused}
           recordingTime={recordingTime}
           disabled={!url}
+          includeFrame={includeFrame}
+          onIncludeFrameChange={setIncludeFrame}
         />
       </main>
 

@@ -16,13 +16,17 @@ export default function DevicePreview({ url, device, background, previewRef, inc
   const frameHeight = includeFrame ? (device?.height || 844) + bezel * 2 : (device?.height || 844);
   const totalHeight = isDesktop && includeFrame ? frameHeight + 30 : frameHeight;
 
+  const capturePadding = 80;
+
   const calculateScale = useCallback(() => {
     if (!containerRef.current || !device) return;
     const container = containerRef.current;
-    const maxW = container.clientWidth * 0.8;
-    const maxH = container.clientHeight * 0.85;
-    const scaleX = maxW / frameWidth;
-    const scaleY = maxH / totalHeight;
+    const maxW = container.clientWidth * 0.9;
+    const maxH = container.clientHeight * 0.9;
+    const totalW = frameWidth + capturePadding * 2;
+    const totalH = totalHeight + capturePadding * 2;
+    const scaleX = maxW / totalW;
+    const scaleY = maxH / totalH;
     setScale(Math.min(scaleX, scaleY, 1));
   }, [device, frameWidth, totalHeight]);
 
@@ -44,7 +48,9 @@ export default function DevicePreview({ url, device, background, previewRef, inc
   function getBackgroundStyle() {
     if (!background || background === 'transparent') {
       return {
-        background: 'repeating-conic-gradient(#1a1a1e 0% 25%, #111113 0% 50%) 50% / 20px 20px',
+        backgroundColor: '#ffffff',
+        backgroundImage: 'radial-gradient(circle, #d0d0d0 1px, transparent 1px)',
+        backgroundSize: '20px 20px',
       };
     }
     return { background };
@@ -158,11 +164,16 @@ export default function DevicePreview({ url, device, background, previewRef, inc
   // Frame-less mode: just show the screen with rounded corners
   if (!includeFrame && url) {
     return (
-      <div className={styles.container}
-        ref={(el) => { containerRef.current = el; if (previewRef) previewRef.current = el; }}
+      <div
+        className={styles.container}
+        ref={containerRef}
         style={getBackgroundStyle()}
       >
-        <div className={styles.deviceWrapper} style={{ transform: `scale(${scale})` }}>
+        <div
+          className={styles.captureArea}
+          ref={(el) => { if (previewRef) previewRef.current = el; }}
+          style={{ padding: `${capturePadding}px`, transform: `scale(${scale})` }}
+        >
           <div
             className={styles.screenOnly}
             style={{
@@ -202,9 +213,10 @@ export default function DevicePreview({ url, device, background, previewRef, inc
   }
 
   return (
-    <div className={styles.container}
-      ref={(el) => { containerRef.current = el; if (previewRef) previewRef.current = el; }}
-      style={getBackgroundStyle()}
+    <div
+      className={styles.container}
+      ref={containerRef}
+      style={url ? getBackgroundStyle() : undefined}
     >
       {!url ? (
         <div className={styles.emptyState}>
@@ -216,74 +228,80 @@ export default function DevicePreview({ url, device, background, previewRef, inc
           <p>The site loads inside the selected device frame</p>
         </div>
       ) : (
-        <div className={styles.deviceWrapper} style={{ transform: `scale(${scale})` }}>
-          <div
-            className={`${styles.frame} ${isDesktop ? styles.desktopFrame : ''}`}
-            style={{
-              width: frameWidth,
-              height: frameHeight,
-              borderRadius: device.frameRadius,
-              background: device.frameColor,
-              ...(isDesktop ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}),
-            }}
-          >
-            <div className={styles.bezelShine} style={{ borderRadius: device.frameRadius }} />
-
-            {renderSideButtons()}
-            {renderNotch()}
-            {renderFoldHinge()}
-
+        <div
+          className={styles.captureArea}
+          ref={(el) => { if (previewRef) previewRef.current = el; }}
+          style={{ padding: `${capturePadding}px`, transform: `scale(${scale})` }}
+        >
+          <div className={styles.deviceWrapper}>
             <div
-              className={styles.screen}
+              className={`${styles.frame} ${isDesktop ? styles.desktopFrame : ''}`}
               style={{
-                width: device.width,
-                height: device.height,
-                borderRadius: device.screenRadius,
-                top: bezel,
-                left: bezel,
+                width: frameWidth,
+                height: frameHeight,
+                borderRadius: device.frameRadius,
+                background: device.frameColor,
+                ...(isDesktop ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}),
               }}
             >
-              {loading && (
-                <div className={styles.loader}>
-                  <div className={styles.spinner} />
-                  <span>Loading...</span>
-                </div>
+              <div className={styles.bezelShine} style={{ borderRadius: device.frameRadius }} />
+
+              {renderSideButtons()}
+              {renderNotch()}
+              {renderFoldHinge()}
+
+              <div
+                className={styles.screen}
+                style={{
+                  width: device.width,
+                  height: device.height,
+                  borderRadius: device.screenRadius,
+                  top: bezel,
+                  left: bezel,
+                }}
+              >
+                {loading && (
+                  <div className={styles.loader}>
+                    <div className={styles.spinner} />
+                    <span>Loading...</span>
+                  </div>
+                )}
+                {iframeError && (
+                  <div className={styles.errorOverlay}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="15" y1="9" x2="9" y2="15" />
+                      <line x1="9" y1="9" x2="15" y2="15" />
+                    </svg>
+                    <p>Cannot load this site</p>
+                    <span>The site may block embedding</span>
+                  </div>
+                )}
+                <iframe
+                  src={proxyUrl}
+                  className={styles.iframe}
+                  style={{ opacity: loading || iframeError ? 0 : 1 }}
+                  title="Device preview"
+                  onLoad={() => setLoading(false)}
+                  onError={() => { setLoading(false); setIframeError(true); }}
+                />
+              </div>
+
+              {!isDesktop && device.notch !== 'none' && (
+                <div className={styles.homeIndicator} style={{ bottom: bezel + 4 }} />
               )}
-              {iframeError && (
-                <div className={styles.errorOverlay}>
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="15" y1="9" x2="9" y2="15" />
-                    <line x1="9" y1="9" x2="15" y2="15" />
-                  </svg>
-                  <p>Cannot load this site</p>
-                  <span>The site may block embedding</span>
-                </div>
-              )}
-              <iframe
-                src={proxyUrl}
-                className={styles.iframe}
-                style={{ opacity: loading || iframeError ? 0 : 1 }}
-                title="Device preview"
-                onLoad={() => setLoading(false)}
-                onError={() => { setLoading(false); setIframeError(true); }}
-              />
             </div>
 
-            {!isDesktop && device.notch !== 'none' && (
-              <div className={styles.homeIndicator} style={{ bottom: bezel + 4 }} />
+            {isDesktop && (
+              <div className={styles.laptopBase} style={{
+                width: frameWidth + 80,
+                background: device.frameColor,
+              }}>
+                <div className={styles.laptopNotch} />
+                <div className={styles.laptopBottom} style={{ background: device.frameColor }} />
+              </div>
             )}
           </div>
-
-          {isDesktop && (
-            <div className={styles.laptopBase} style={{
-              width: frameWidth + 80,
-              background: device.frameColor,
-            }}>
-              <div className={styles.laptopNotch} />
-              <div className={styles.laptopBottom} style={{ background: device.frameColor }} />
-            </div>
-          )}
         </div>
       )}
     </div>

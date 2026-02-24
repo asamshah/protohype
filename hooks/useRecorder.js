@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd } = {}) {
+export default function useRecorder(previewRef) {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -10,8 +10,6 @@ export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd }
 
   const mediaRecorderRef = useRef(null);
   const displayStreamRef = useRef(null);
-  const outputStreamRef = useRef(null);
-  const croppingCanvasRef = useRef(null);
   const animFrameRef = useRef(null);
   const chunksRef = useRef([]);
   const timerRef = useRef(null);
@@ -32,10 +30,6 @@ export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd }
     }
 
     try {
-      // Hide UI overlays before capture starts
-      if (onCaptureStart) onCaptureStart();
-      await new Promise((r) => setTimeout(r, 150));
-
       // Capture the entire browser tab
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         video: { displaySurface: 'browser', frameRate: 30 },
@@ -51,7 +45,6 @@ export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd }
 
       // Create an offscreen canvas for cropping to the device area
       const canvas = document.createElement('canvas');
-      croppingCanvasRef.current = canvas;
       const ctx = canvas.getContext('2d');
 
       // Crop loop: every frame, read the device bounding rect and draw only that region
@@ -59,7 +52,6 @@ export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd }
         if (!previewRef?.current || !displayStreamRef.current) return;
 
         const rect = previewRef.current.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
 
         // The display stream captures at the screen's native resolution
         const srcW = srcVideo.videoWidth;
@@ -89,7 +81,6 @@ export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd }
 
       // Record from the cropped canvas stream
       const croppedStream = canvas.captureStream(30);
-      outputStreamRef.current = croppedStream;
 
       const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
         ? 'video/webm;codecs=vp9'
@@ -128,16 +119,12 @@ export default function useRecorder(previewRef, { onCaptureStart, onCaptureEnd }
       setIsPaused(false);
       setRecordingTime(0);
       setVideoBlob(null);
-      // Clear the pre-capture flag now that isRecording will keep toolbar hidden
-      if (onCaptureEnd) onCaptureEnd();
     } catch (err) {
       if (err.name !== 'NotAllowedError') {
         console.error('Recording failed:', err);
       }
-      // Restore UI if user cancelled or error occurred
-      if (onCaptureEnd) onCaptureEnd();
     }
-  }, [isPaused, previewRef, stopCropLoop, onCaptureStart, onCaptureEnd]);
+  }, [isPaused, previewRef, stopCropLoop]);
 
   const pauseRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {

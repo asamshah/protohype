@@ -7,12 +7,13 @@
   height: 100%;
   position: relative;
   overflow: hidden;
+  padding-bottom: 70px;
 }
 
 /* Empty state */
 .emptyState {
   text-align: center;
-  color: var(--text-muted);
+  color: #999;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,7 +22,7 @@
 .emptyState h2 {
   font-size: 18px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #666;
   margin-bottom: 4px;
 }
 
@@ -30,9 +31,17 @@
   max-width: 260px;
 }
 
-/* Device wrapper — no visible styling, just a scaling/positioning container */
-.deviceWrapper {
+/* Capture area — wraps tightly around device with background and padding */
+.captureArea {
   transform-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+}
+
+/* Device wrapper — no visible styling, just a positioning container */
+.deviceWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;

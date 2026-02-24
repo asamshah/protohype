@@ -24,7 +24,7 @@ export async function POST(request) {
     // Convert WebM to MP4 using system ffmpeg
     await new Promise((resolve, reject) => {
       exec(
-        `ffmpeg -i "${inputPath}" -c:v libx264 -preset fast -crf 23 -movflags +faststart -y "${outputPath}"`,
+        `ffmpeg -i "${inputPath}" -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -preset fast -crf 23 -movflags +faststart -y "${outputPath}"`,
         { timeout: 120000 },
         (error, stdout, stderr) => {
           if (error) {

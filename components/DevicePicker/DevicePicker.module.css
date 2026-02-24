@@ -24,7 +24,7 @@
 
 .tab.active {
   background: var(--accent);
-  color: white;
+  color: var(--accent-text);
 }
 
 .tab:not(.active):hover {

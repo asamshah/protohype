@@ -19,25 +19,46 @@ export default function BackgroundPicker({
   hidden,
   onScreenshot,
   onStartRecording,
+  onPauseRecording,
   onStopRecording,
   isRecording,
+  isPaused,
+  recordingTime,
   disabled,
+  includeFrame,
+  onIncludeFrameChange,
 }) {
   if (hidden) return null;
 
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
   return (
-    <div className={styles.toolbar} data-bg-toolbar="true">
+    <div className={styles.toolbar}>
       <div className={styles.panel}>
         <div className={styles.swatches}>
           {presets.map((preset) => (
             <button
               key={preset.id}
               className={`${styles.swatch} ${background === preset.value ? styles.active : ''}`}
-              style={{
-                background: preset.type === 'transparent'
-                  ? 'repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50% / 8px 8px'
-                  : preset.value,
-              }}
+              style={
+                preset.type === 'transparent'
+                  ? {
+                      backgroundColor: '#ffffff',
+                      backgroundImage: 'radial-gradient(circle, #c0c0c0 1px, transparent 1px)',
+                      backgroundSize: '6px 6px',
+                    }
+                  : preset.type === 'gradient'
+                  ? {
+                      backgroundImage: preset.value,
+                    }
+                  : {
+                      backgroundColor: preset.value,
+                    }
+              }
               title={preset.label}
               onClick={() => onBackgroundChange(preset.value)}
             />
@@ -57,13 +78,26 @@ export default function BackgroundPicker({
 
           <div className={styles.divider} />
 
+          <div
+            className={styles.frameToggle}
+            onClick={() => onIncludeFrameChange(!includeFrame)}
+            title={includeFrame ? 'Hide device frame' : 'Show device frame'}
+          >
+            <div className={`${styles.frameToggleTrack} ${includeFrame ? styles.on : ''}`}>
+              <div className={styles.frameToggleThumb} />
+            </div>
+            <span className={styles.frameToggleLabel}>Frame</span>
+          </div>
+
+          <div className={styles.divider} />
+
           <button
             className={styles.actionBtn}
             onClick={onScreenshot}
-            disabled={disabled}
+            disabled={disabled || isRecording}
             title="Screenshot"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <circle cx="12" cy="12" r="3" />
             </svg>
@@ -79,15 +113,38 @@ export default function BackgroundPicker({
               <span className={styles.recordDot} />
             </button>
           ) : (
-            <button
-              className={`${styles.actionBtn} ${styles.stopAction}`}
-              onClick={onStopRecording}
-              title="Stop recording"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-              </svg>
-            </button>
+            <>
+              <span className={styles.recordingTimer}>
+                <span className={styles.recordingDot} />
+                {formatTime(recordingTime)}
+                {isPaused && <span className={styles.pausedLabel}>Paused</span>}
+              </span>
+              <button
+                className={styles.actionBtn}
+                onClick={isPaused ? onStartRecording : onPauseRecording}
+                title={isPaused ? 'Resume' : 'Pause'}
+              >
+                {isPaused ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5,3 19,12 5,21" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="5" y="3" width="4" height="18" rx="1" />
+                    <rect x="15" y="3" width="4" height="18" rx="1" />
+                  </svg>
+                )}
+              </button>
+              <button
+                className={`${styles.actionBtn} ${styles.stopAction}`}
+                onClick={onStopRecording}
+                title="Stop recording"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                </svg>
+              </button>
+            </>
           )}
         </div>
       </div>
